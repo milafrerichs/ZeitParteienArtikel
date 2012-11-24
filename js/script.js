@@ -1,6 +1,6 @@
 var series = {};
 var articles_per_party = {"spd":false,"cdu":false,"fdp":false,"b90":false,"linke":false,"piraten":false};	
-
+var dateStringsArray = [];
 function saveCounts(party,articles_count_obj,pos) {
    for( var dateObj in articles_count_obj) {
 	   if(dateObj in series) {
@@ -8,6 +8,7 @@ function saveCounts(party,articles_count_obj,pos) {
    		}else {
 			series[dateObj] = [0,0,0,0,0,0];
 			series[dateObj][pos] = articles_count_obj[dateObj].count;
+			dateStringsArray.push(dateObj);
    		}
    }
    articles_per_party[party.toLowerCase()] = true;
@@ -35,7 +36,7 @@ function getArticlesFromZeitForParty(party) {
     }
    	var api = $("body").zon_api({
 	  query:party_suchstring,
-	  api_key:"#####",
+	  api_key:"####",
 	  endpoint:"content",
 	  params:{fields:"release_date"},
 	  limit: 100
@@ -70,8 +71,11 @@ function plotData() {
 	linke_dates = new Array();
 	piraten_dates = new Array();
 	categories = new Array();
+	dateStringsArray.sort();
 	var currentTime = new Date()
-	for(var dataObj in series) {
+	
+	for(var i=dateStringsArray.length;i>0;i--) {
+		dataObj = dateStringsArray[i];
 		var date = new Date(parseInt(dataObj));
 		if(date.getMonth() == currentTime.getMonth()) {
 			categories.push(date.getDate()+"."+(date.getMonth()+1));
