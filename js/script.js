@@ -36,7 +36,7 @@ function getArticlesFromZeitForParty(party) {
     }
    	var api = $("body").zon_api({
 	  query:party_suchstring,
-	  api_key:"####",
+	  api_key:"485867bfa02e66f4229556c89a1029e38f02a4843d618072756f",
 	  endpoint:"content",
 	  params:{fields:"release_date"},
 	  limit: 100
