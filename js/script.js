@@ -70,9 +70,7 @@ function getArticlesFromZeitForParty(party) {
 	var endDate = setDateAtEndOfDay(year,month,0);
 	var formattedStartDate = formatDateTime(startDate);
 	var formattedEndDate = formatDateTime(endDate);
-	console.log(formattedStartDate);
-	console.log(formattedEndDate);
-   	var api = $("body").zon_api({
+	var api = $("body").zon_api({
 	  query:party_suchstring,
 	  api_key:"485867bfa02e66f4229556c89a1029e38f02a4843d618072756f",
 	  endpoint:"content",
@@ -133,6 +131,13 @@ function plotData() {
 	        renderTo: 'container',
 	        type: 'spline'
 	    },
+		colors: [
+			'#e20019',
+			'#000',
+			'#FFFF00',
+			'#85b070',
+			'#DF0404'
+			],
 	    title: {
 	        text: 'Artikel in der ZEIT pro Partei im Monat'
 	    },
@@ -165,10 +170,31 @@ function plotData() {
 	        x: -100,
 	        y: 100,
 	        floating: true,
-	        borderWidth: 1,
+	        borderWidth: 0,
 	        backgroundColor: '#FFFFFF',
 	        shadow: true
 	    },
+		plotOptions: {
+		                spline: {
+		                    lineWidth: 1,
+		                    states: {
+		                        hover: {
+		                            lineWidth: 4
+		                        }
+		                    },
+		                    marker: {
+		                        enabled: false,
+		                        states: {
+		                            hover: {
+		                                enabled: true,
+		                                symbol: 'circle',
+		                                radius: 6,
+		                                lineWidth: 1
+		                            }
+		                        }
+		                    },
+						},
+					},
 	    credits: {
 	        enabled: false
 	    },

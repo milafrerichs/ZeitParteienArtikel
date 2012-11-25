@@ -27,9 +27,8 @@
 	  }else {
 		  $year_selected = date('Y');
 	  }	
-	  
 	  ?>
-	  
+	  <br/><br/>
 	  
 	  <form action="" method="post">
 		<select id="month" name="month">
@@ -37,8 +36,10 @@
 				<option value="<?php echo $month;?>"<?php echo ($month_selected == $month)?' selected="selected"':'';?>><?php echo $month_string;?></option>
 			<?php } ?>
 		</select>
-	  	<select id="year">
-			<option value="2012" selected="selected">2012</option>
+	  	<select id="year" name="year">
+			<?php for($year=(int)date("Y");$year>1945;$year--) {?>
+			<option value="<?php echo $year;?>" <?php echo ($year_selected == $year)?' selected="selected"':'';?>><?php echo $year;?></option>
+		<?php }?>
 		</select>
 		<input type="submit" value="Ändern" />
 		</form>
