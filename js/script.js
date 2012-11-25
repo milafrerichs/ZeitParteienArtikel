@@ -1,6 +1,36 @@
 var series = {};
 var articles_per_party = {"spd":false,"cdu":false,"fdp":false,"b90":false,"linke":false,"piraten":false};	
 var dateStringsArray = [];
+
+function addLeadingZeros(dateStr) {
+	return (('0' + (dateStr)).slice(-2));
+}
+
+function formatDate(date) {
+	return date.getFullYear()+"-"+addLeadingZeros((date.getMonth()+1))+"-"+addLeadingZeros(date.getDate());
+}
+function formatDateTime(date) {
+	var dateStr = formatDate(date);
+	return dateStr+"T"+addLeadingZeros(date.getHours())+":"+addLeadingZeros(date.getMinutes())+":"+addLeadingZeros(date.getSeconds())+"Z";
+}
+function setDateAtEndOfDay(year,month,day) {
+	var midnightDate = new Date();
+	midnightDate.setFullYear(year,month,day);
+	midnightDate.setHours(23);
+	midnightDate.setMinutes(59);
+	midnightDate.setSeconds(59);
+	return midnightDate;
+}
+function setDateAtStartOfDay(year,month,day) {
+	var midnightDate = new Date();
+	midnightDate.setFullYear(year,month,day);
+	midnightDate.setHours(0);
+	midnightDate.setMinutes(0);
+	midnightDate.setSeconds(0);
+	return midnightDate;
+}
+
+
 function saveCounts(party,articles_count_obj,pos) {
    for( var dateObj in articles_count_obj) {
 	   if(dateObj in series) {
@@ -34,19 +64,30 @@ function getArticlesFromZeitForParty(party) {
 			break;
 		
     }
+	var month = $('#month :selected').val();
+	var year = $('#year :selected').val();
+	var startDate = setDateAtStartOfDay(year,month-1,1);
+	var endDate = setDateAtEndOfDay(year,month,0);
+	var formattedStartDate = formatDateTime(startDate);
+	var formattedEndDate = formatDateTime(endDate);
+	console.log(formattedStartDate);
+	console.log(formattedEndDate);
    	var api = $("body").zon_api({
 	  query:party_suchstring,
 	  api_key:"485867bfa02e66f4229556c89a1029e38f02a4843d618072756f",
 	  endpoint:"content",
-	  params:{fields:"release_date"},
-	  limit: 100
+	  params:{	fields:"release_date",
+	  			fq:"release_date:["+formattedStartDate+" TO "+formattedEndDate+"]"
+			},
+	  limit: 10000
 	});
       	
 	api.retrieve(0,function (data){
 	   var counts = new Array();
-	   for(i=0;i<100;i++) {
+	   var resultsFound = data.get_result().found;
+	   for(i=0;i<resultsFound;i++) {
 		   date = new Date(data.get_result().matches[i].release_date);
-		   var normalized_date = date.getFullYear()+"-"+(('0' + (date.getMonth()+1)).slice(-2))+"-"+(('0'+ date.getDate()).slice(-2));
+		   var normalized_date = formatDate(date);
 		   var date_key = Date.parse(normalized_date);
 		   if(date_key in counts) {
 			counts[date_key].count += 1;
@@ -72,29 +113,28 @@ function plotData() {
 	piraten_dates = new Array();
 	categories = new Array();
 	dateStringsArray.sort();
-	var currentTime = new Date()
 	
-	for(var i=dateStringsArray.length;i>0;i--) {
+	lastEntry = dateStringsArray.length-1;
+	for(var i=lastEntry;i>=0;i--) {
 		dataObj = dateStringsArray[i];
 		var date = new Date(parseInt(dataObj));
-		if(date.getMonth() == currentTime.getMonth()) {
-			categories.push(date.getDate()+"."+(date.getMonth()+1));
-			spd_dates.push(series[dataObj][0]);
-			cdu_dates.push(series[dataObj][1]);
-			fdp_dates.push(series[dataObj][2]);
-			b90_dates.push(series[dataObj][3]);
-			linke_dates.push(series[dataObj][4]);
-			piraten_dates.push(series[dataObj][5]);
-		}
+		categories.push(date.getDate()+"."+(date.getMonth()+1));
+		spd_dates.push(series[dataObj][0]);
+		cdu_dates.push(series[dataObj][1]);
+		fdp_dates.push(series[dataObj][2]);
+		b90_dates.push(series[dataObj][3]);
+		linke_dates.push(series[dataObj][4]);
+		piraten_dates.push(series[dataObj][5]);
+		
 	}
 	dataSeries = [{name:'SPD',data:spd_dates},{name:'CDU',data:cdu_dates},{name:'FDP',data:fdp_dates},{name:'B90/Die Grünen',data:b90_dates},{name:'Die Linke',data:linke_dates},{name:'Die Piraten',data:piraten_dates}];
 	chart = new Highcharts.Chart({
 	    chart: {
 	        renderTo: 'container',
-	        type: 'column'
+	        type: 'spline'
 	    },
 	    title: {
-	        text: 'Artikel in der ZEIT pro Partei und Tag der letzten 100 Artikel des aktuellen Monats'
+	        text: 'Artikel in der ZEIT pro Partei im Monat'
 	    },
 	    subtitle: {
 	        text: 'Source: ZEIT API'
@@ -103,7 +143,10 @@ function plotData() {
 	        categories: categories,
 	        title: {
 	            text: null
-	        }
+	        },
+			labels: {
+				rotation: -45
+			}
 	    },
 	    yAxis: {
 	        min: 0,
@@ -135,7 +178,7 @@ function plotData() {
 
 
 $(document).ready(function(){ 
-      	
+    
   	getArticlesFromZeitForParty("SPD");
 	getArticlesFromZeitForParty("CDU");
 	getArticlesFromZeitForParty("FDP");
