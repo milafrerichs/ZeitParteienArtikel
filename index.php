@@ -72,8 +72,15 @@
 	  
 	  
 	  <footer>
-		  <p>Aktuell verwende ich das content Modul der API, nicht das keywords Modul, da dies noch nicht so funktioniert, wie es meiner Meinung nach besser wäre. Aber das ZEIT Team arbeitet dran. Deswegen kann es sein, dass die Artikel nicht immer stimmen. Aber die Partei wird in irgendeiner Art immer erwähnt und sei es als Herr/Frau ... (SPD/CDU/etc.) </p>
+		  <p>Aktuell verwende ich das content Modul der API, nicht das keywords Modul, da dies noch nicht so funktioniert, wie es meiner Meinung nach besser wäre. Aber das ZEIT Team arbeitet dran. Deswegen kann es sein, dass die Artikel nicht immer stimmen. Die Partei wird in irgendeiner Art immer erwähnt und sei es als Herr/Frau ... (SPD/CDU/etc.) </p>
 		  <p>Entwickelt von <a href="http://milafrerichs.de">Mila Frerichs</a> mit Hilfe der <a href="htpp://developer.zeit.de">ZEIT</a> API.</p>
+		  
+		  
+	<h4>Recent Changes:</h4>	  
+	<h5>27.11.2012 16:50</h5>
+	<p>Suche verbessert, Links der Artikel hinzugefügt, bei Click wir die Artikelliste festgestellt</p>
+	<h5>27.11.2012 16:00</h5>
+	<p>Supertitel in den Tooltip integriert und Artikeltitel als Liste hinzugefügt</p>
 	  </footer>
   </body>
   </html>
