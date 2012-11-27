@@ -58,11 +58,11 @@ function getArticlesFromZeitForParty(party) {
  	   		break;
 		case 'FDP': pos = 2;party_suchstring = party;
  	   		break;
-		case 'B90': pos = 3;party_suchstring = 'Die Grünen';
+		case 'B90': pos = 3;party_suchstring = '"Die Grünen",Grüne';
  	   		break;
-		case 'LINKE': pos = 4;party_suchstring = 'Die Linke';
+		case 'LINKE': pos = 4;party_suchstring = '"Die Linke"';
 			break;
-		case 'PIRATEN': pos = 5;party_suchstring = 'Die Piraten';
+		case 'PIRATEN': pos = 5;party_suchstring = '"Die Piraten"';
 			break;
 		
     }
@@ -76,7 +76,7 @@ function getArticlesFromZeitForParty(party) {
 	  query:party_suchstring,
 	  api_key:"485867bfa02e66f4229556c89a1029e38f02a4843d618072756f",
 	  endpoint:"content",
-	  params:{	fields:"release_date,supertitle,title,href",
+	  params:{	fields:"release_date,supertitle,title,href,snippet",
 	  			fq:"release_date:["+formattedStartDate+" TO "+formattedEndDate+"]"
 			},
 	  limit: 10000
@@ -88,6 +88,7 @@ function getArticlesFromZeitForParty(party) {
 	   for(i=0;i<resultsFound;i++) {
 		   date = new Date(data.get_result().matches[i].release_date);
 		   var supertitle = data.get_result().matches[i].supertitle;
+		   var snippet = data.get_result().matches[i].snippet;
 		   var title = data.get_result().matches[i].title;
 		   var url = data.get_result().matches[i].href;
 		   var normalized_date = formatDate(date);
@@ -97,8 +98,9 @@ function getArticlesFromZeitForParty(party) {
 			counts[date_key].content.supertitles.push(supertitle);
 			counts[date_key].content.titles.push(title);
 			counts[date_key].content.urls.push(url);
+			counts[date_key].content.snippets.push(snippet);
 		   }else {
-		   	counts[date_key] = {count : 1, content : {supertitles:[supertitle],titles:[title],urls:[url]}};
+		   	counts[date_key] = {count : 1, content : {supertitles:[supertitle],titles:[title],urls:[url],snippets:[snippet]}};
 		   }
 	   }
 	   
@@ -111,6 +113,7 @@ function getArticlesFromZeitForParty(party) {
 }
 
 function plotData() {
+	var change_articles = true;
 	spd_dates = new Array();
 	cdu_dates = new Array();
 	fdp_dates = new Array();
@@ -134,7 +137,8 @@ function plotData() {
 		piraten_dates.push({y:series[dataObj][5].count,dataLabels:series[dataObj][5].content});
 		
 	}
-	dataSeries = [{name:'SPD',data:spd_dates},{name:'CDU',data:cdu_dates},{name:'FDP',data:fdp_dates},{name:'B90/Die Grünen',data:b90_dates},{name:'Die Linke',data:linke_dates},{name:'Die Piraten',data:piraten_dates}];
+	
+	dataSeries = [{name:'SPD',data:spd_dates,allowPointSelect: true},{name:'CDU',data:cdu_dates},{name:'FDP',data:fdp_dates},{name:'B90/Die Grünen',data:b90_dates},{name:'Die Linke',data:linke_dates},{name:'Die Piraten',data:piraten_dates}];
 	chart = new Highcharts.Chart({
 	    chart: {
 	        renderTo: 'container',
@@ -179,11 +183,11 @@ function plotData() {
 				if(typeof(point.dataLabels.supertitles) != 'undefined') {
 					format += '<br/>'+point.dataLabels.supertitles.join(", ");
 				}
-				if(typeof(point.dataLabels.titles) != 'undefined') {
+				if(typeof(point.dataLabels.titles) != 'undefined' && change_articles) {
 					var titleLenght = point.dataLabels.titles.length;
 					$('#articles ul').html('');
 					for(var k=0;k<titleLenght;k++) {
-						$('#articles ul').append('<li>'+point.dataLabels.titles[k]+'</li>');
+						$('#articles ul').append('<li><a href="'+point.dataLabels.urls[k]+'">'+point.dataLabels.titles[k]+'</a><br/><p>'+point.dataLabels.snippets[k]+'</p></li>');
 					}
 				}
                 return format;
@@ -220,6 +224,20 @@ function plotData() {
 		                        }
 		                    },
 						},
+						series: {
+					                cursor: 'pointer',
+					                point: {
+					                    events: {
+					                        click: function() {
+												if(change_articles) {
+													change_articles = false;
+												}else {
+													change_articles = true;
+												}
+					                        }
+					                    }
+					                }
+					            }
 					},
 	    credits: {
 	        enabled: false
