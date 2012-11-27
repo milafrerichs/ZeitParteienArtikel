@@ -11,7 +11,10 @@
   <body>
 	  <a href="https://twitter.com/share" class="twitter-share-button" data-lang="de" data-hashtags="zeitapi">Twittern</a>
 	  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
-	  
+	  <a href="https://twitter.com/mila_frerichs" class="twitter-follow-button" data-show-count="false" data-lang="de">@mila_frerichs folgen</a><br/><br/>
+	  <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+	  <iframe src="http://ghbtns.com/github-btn.html?user=milafrerichs&repo=ZeitParteienArtikel&type=watch&count=true"
+	    allowtransparency="true" frameborder="0" scrolling="0" width="110" height="20"></iframe><br/><br/>
 	  <?php
 	  date_default_timezone_set('Europe/Berlin');
 	  
@@ -60,6 +63,8 @@
 	    })();
 
 	  </script>
-
+	  <footer>
+		  <p>Entwickelt von <a href="http://milafrerichs.de">Mila Frerichs</a> mit Hilfe der <a href="htpp://developer.zeit.de">ZEIT</a> API.</p>
+	  </footer>
   </body>
   </html>
