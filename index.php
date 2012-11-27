@@ -49,6 +49,11 @@
 	  <div id="container"></div>
 	  
 	  
+	  <div id="articles">
+		  <h1>Artikel:</h1>
+			<ul>
+			</ul>
+	  </div>
 	  
 	  <script type="text/javascript">
 
@@ -63,7 +68,11 @@
 	    })();
 
 	  </script>
+	  
+	  
+	  
 	  <footer>
+		  <p>Aktuell verwende ich das content Modul der API, nicht das keywords Modul, da dies noch nicht so funktioniert, wie es meiner Meinung nach besser wäre. Aber das ZEIT Team arbeitet dran. Deswegen kann es sein, dass die Artikel nicht immer stimmen. Aber die Partei wird in irgendeiner Art immer erwähnt und sei es als Herr/Frau ... (SPD/CDU/etc.) </p>
 		  <p>Entwickelt von <a href="http://milafrerichs.de">Mila Frerichs</a> mit Hilfe der <a href="htpp://developer.zeit.de">ZEIT</a> API.</p>
 	  </footer>
   </body>

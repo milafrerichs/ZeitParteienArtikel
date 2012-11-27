@@ -34,10 +34,12 @@ function setDateAtStartOfDay(year,month,day) {
 function saveCounts(party,articles_count_obj,pos) {
    for( var dateObj in articles_count_obj) {
 	   if(dateObj in series) {
-			series[dateObj][pos] = articles_count_obj[dateObj].count;
+			series[dateObj][pos].count = articles_count_obj[dateObj].count;
+			series[dateObj][pos].content = articles_count_obj[dateObj].content;
    		}else {
-			series[dateObj] = [0,0,0,0,0,0];
-			series[dateObj][pos] = articles_count_obj[dateObj].count;
+			series[dateObj] = [{count:0,content:[]},{count:0,content:[]},{count:0,content:[]},{count:0,content:[]},{count:0,content:[]},{count:0,content:[]}];
+			series[dateObj][pos].count = articles_count_obj[dateObj].count;
+			series[dateObj][pos].content = articles_count_obj[dateObj].content;
 			dateStringsArray.push(dateObj);
    		}
    }
@@ -74,7 +76,7 @@ function getArticlesFromZeitForParty(party) {
 	  query:party_suchstring,
 	  api_key:"485867bfa02e66f4229556c89a1029e38f02a4843d618072756f",
 	  endpoint:"content",
-	  params:{	fields:"release_date",
+	  params:{	fields:"release_date,supertitle,title,href",
 	  			fq:"release_date:["+formattedStartDate+" TO "+formattedEndDate+"]"
 			},
 	  limit: 10000
@@ -85,12 +87,18 @@ function getArticlesFromZeitForParty(party) {
 	   var resultsFound = data.get_result().found;
 	   for(i=0;i<resultsFound;i++) {
 		   date = new Date(data.get_result().matches[i].release_date);
+		   var supertitle = data.get_result().matches[i].supertitle;
+		   var title = data.get_result().matches[i].title;
+		   var url = data.get_result().matches[i].href;
 		   var normalized_date = formatDate(date);
 		   var date_key = Date.parse(normalized_date);
 		   if(date_key in counts) {
 			counts[date_key].count += 1;
+			counts[date_key].content.supertitles.push(supertitle);
+			counts[date_key].content.titles.push(title);
+			counts[date_key].content.urls.push(url);
 		   }else {
-		   	counts[date_key] = {count : 1};
+		   	counts[date_key] = {count : 1, content : {supertitles:[supertitle],titles:[title],urls:[url]}};
 		   }
 	   }
 	   
@@ -110,6 +118,7 @@ function plotData() {
 	linke_dates = new Array();
 	piraten_dates = new Array();
 	categories = new Array();
+	spd_supertitles = new Array();
 	dateStringsArray.sort();
 	
 	lastEntry = dateStringsArray.length-1;
@@ -117,12 +126,12 @@ function plotData() {
 		dataObj = dateStringsArray[i];
 		var date = new Date(parseInt(dataObj));
 		categories.push(date.getDate()+"."+(date.getMonth()+1));
-		spd_dates.push(series[dataObj][0]);
-		cdu_dates.push(series[dataObj][1]);
-		fdp_dates.push(series[dataObj][2]);
-		b90_dates.push(series[dataObj][3]);
-		linke_dates.push(series[dataObj][4]);
-		piraten_dates.push(series[dataObj][5]);
+		spd_dates.push({y:series[dataObj][0].count,dataLabels:series[dataObj][0].content});
+		cdu_dates.push({y:series[dataObj][1].count,dataLabels:series[dataObj][1].content});
+		fdp_dates.push({y:series[dataObj][2].count,dataLabels:series[dataObj][2].content});
+		b90_dates.push({y:series[dataObj][3].count,dataLabels:series[dataObj][3].content});
+		linke_dates.push({y:series[dataObj][4].count,dataLabels:series[dataObj][4].content});
+		piraten_dates.push({y:series[dataObj][5].count,dataLabels:series[dataObj][5].content});
 		
 	}
 	dataSeries = [{name:'SPD',data:spd_dates},{name:'CDU',data:cdu_dates},{name:'FDP',data:fdp_dates},{name:'B90/Die Grünen',data:b90_dates},{name:'Die Linke',data:linke_dates},{name:'Die Piraten',data:piraten_dates}];
@@ -163,6 +172,23 @@ function plotData() {
 	            overflow: 'justify'
 	        }
 	    },
+		tooltip: {
+            formatter: function() {
+                var point = this.point;
+				var format = '<b>'+ point.series.name +'</b><br/>Artikel: '+point.y;
+				if(typeof(point.dataLabels.supertitles) != 'undefined') {
+					format += '<br/>'+point.dataLabels.supertitles.join(", ");
+				}
+				if(typeof(point.dataLabels.titles) != 'undefined') {
+					var titleLenght = point.dataLabels.titles.length;
+					$('#articles ul').html('');
+					for(var k=0;k<titleLenght;k++) {
+						$('#articles ul').append('<li>'+point.dataLabels.titles[k]+'</li>');
+					}
+				}
+                return format;
+            }
+        },
 	    legend: {
 	        layout: 'vertical',
 	        align: 'right',
